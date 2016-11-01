@@ -73,6 +73,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="..\SurfaceBlobDetection\Area.xaml.cs">
+      <Link>Area.xaml.cs</Link>
+      <DependentUpon>Area.xaml</DependentUpon>
+    </Compile>
     <Compile Include="..\SurfaceBlobDetection\ScatterView.xaml.cs">
       <Link>ScatterView.xaml.cs</Link>
       <DependentUpon>ScatterView.xaml</DependentUpon>
@@ -80,6 +84,11 @@
     <Compile Include="..\SurfaceBlobDetection\ViewModel.cs">
       <Link>ViewModel.cs</Link>
     </Compile>
+    <Page Include="..\SurfaceBlobDetection\Area.xaml">
+      <Link>Area.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="..\SurfaceBlobDetection\ScatterView.xaml">
       <Link>ScatterView.xaml</Link>
       <Generator>MSBuild:Compile</Generator>

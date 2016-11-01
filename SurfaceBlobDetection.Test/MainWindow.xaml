@@ -5,33 +5,6 @@
         xmlns:local="clr-namespace:SurfaceBlobDetection"
         Title="SurfaceBlobDetection.Test" Height="800" Width="1024">
 
-    <Grid Background="Black">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <Grid Grid.Column="0">
-			<TextBlock Text="SurfaceBlobDetection V1" TextWrapping="NoWrap" Foreground="Magenta" Margin="10,20,0,0">
-                <TextBlock.LayoutTransform >
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="90"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </TextBlock.LayoutTransform>
-            </TextBlock>
-        </Grid>
-
-		<Canvas Grid.Column="1">
-			<Rectangle Width="150" Height="200" Fill="Lime" Margin="300"/>
-		</Canvas>
-
-		<s:ScatterView Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="scatterView">
-			<local:ScatterView />
-			<local:ScatterView />
-		</s:ScatterView>
-
-	</Grid>
+	<local:Area/>
+	
 </Window>
