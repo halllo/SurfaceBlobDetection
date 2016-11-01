@@ -1,0 +1,30 @@
+﻿<s:ScatterViewItem x:Class="SurfaceBlobDetection.ScatterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:s="http://schemas.microsoft.com/surface/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             				   
+			 Width="200" Height="200">
+
+	<Grid Margin="20">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<Label Content="Konsole" Grid.ColumnSpan="2" />
+
+		<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+			<s:SurfaceButton Content="close" Width="100"/>
+		</StackPanel>
+
+		<Grid Grid.Row="1">
+
+			<s:SurfaceTextBox />
+
+		</Grid>
+
+	</Grid>
+</s:ScatterViewItem>
