@@ -81,6 +81,9 @@
       <Link>ScatterView.xaml.cs</Link>
       <DependentUpon>ScatterView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="..\SurfaceBlobDetection\TrackingCanvas.cs">
+      <Link>TrackingCanvas.cs</Link>
+    </Compile>
     <Compile Include="..\SurfaceBlobDetection\ViewModel.cs">
       <Link>ViewModel.cs</Link>
     </Compile>

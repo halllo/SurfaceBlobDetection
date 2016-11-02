@@ -99,6 +99,7 @@
     <Compile Include="ScatterView.xaml.cs">
       <DependentUpon>ScatterView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TrackingCanvas.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>

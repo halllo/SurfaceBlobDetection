@@ -26,17 +26,13 @@
 		</TextBlock>
 	</Grid>
 
-	<Canvas Grid.Column="1" Background="Black"
-				TouchDown="Canvas_TouchDown"
-				TouchMove="Canvas_TouchMove"
-				TouchUp="Canvas_TouchUp"
-				x:Name="VisualizerCanvas"
-				>
+	<local:TrackingCanvas Grid.Column="1" StartTracking="TrackingCanvas_StartTracking">
 
-		<TextBlock x:Name="Log" IsHitTestVisible="False" Foreground="White"/>
+		<TextBlock x:Name="Log1" IsHitTestVisible="False" Foreground="White" Canvas.Left="100" Canvas.Top="100"/>
+		<TextBlock x:Name="Log2" IsHitTestVisible="False" Foreground="White" Canvas.Left="100" Canvas.Top="500"/>
 		<Rectangle Width="150" Height="200" Fill="Lime" Margin="300"/>
 
-	</Canvas>
+	</local:TrackingCanvas>
 
 	<s:ScatterView Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<local:ScatterView />
