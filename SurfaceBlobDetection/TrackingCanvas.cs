@@ -19,27 +19,31 @@ namespace SurfaceBlobDetection
 			long TagValue { get; }
 			bool HasDisplay { get; }
 			void Display(FrameworkElement element);
-		}
 
-		private class TrackedBlob : ITrackedBlob
+			event Action<ITrackedBlob> Moved;
+			event Action<ITrackedBlob> Removed;
+		}
+		private abstract class TrackedBlob : ITrackedBlob
 		{
-			public TrackedBlob(TrackingCanvas container, TouchDevice touch)
+			public TrackedBlob(TrackingCanvas container)
 			{
 				Container = container;
-				Touch = touch;
 			}
 
-			public TrackingCanvas Container { get; private set; }
-			public TouchDevice Touch { get; private set; }
+			public abstract int Id { get; }
+			public abstract Point Center { get; }
+			public abstract EllipseData Axis { get; }
+			public abstract bool IsTag { get; }
+			public abstract long TagValue { get; }
 
+			public TrackingCanvas Container { get; private set; }
 			public bool IsExpired { get; set; }
 			public FrameworkElement Visualization { get; set; }
-
-			public Point Center { get { return Touch.GetCenterPosition(Container); } }
-			public EllipseData Axis { get { return Touch.GetEllipseData(Container); } }
-			public bool IsTag { get { return Touch.GetIsTagRecognized(); } }
-			public long TagValue { get { return Touch.GetTagData().Value; } }
 			public bool HasDisplay { get { return Visualization != null; } }
+
+			public event Action<ITrackedBlob> Moved;
+			public event Action<ITrackedBlob> Removed;
+
 			public void Display(FrameworkElement element)
 			{
 				if (Visualization != null) throw new NotSupportedException("TrackedBlob already displays.");
@@ -52,6 +56,9 @@ namespace SurfaceBlobDetection
 				{
 					Container.Children.Remove(Visualization);
 				}
+
+				var e = Removed;
+				if (e != null) e.Invoke(this);
 			}
 			public void Move()
 			{
@@ -60,15 +67,49 @@ namespace SurfaceBlobDetection
 					var center = Center;
 					Visualization.SetValue(Canvas.LeftProperty, center.X - Visualization.Width / 2);
 					Visualization.SetValue(Canvas.TopProperty, center.Y - Visualization.Height / 2);
+
+					if (IsTag)
+					{
+						var rotate = Visualization.RenderTransform as RotateTransform;
+						if (rotate != null) rotate.Angle = Axis.Orientation;
+					}
+
+					var e = Moved;
+					if (e != null) e.Invoke(this);
 				}
 			}
 		}
+		private class TrackedTouchBlob : TrackedBlob
+		{
+			public TrackedTouchBlob(TrackingCanvas container, TouchDevice touch) : base(container)
+			{
+				Touch = touch;
+			}
+
+			public TouchDevice Touch { get; private set; }
+
+			public override int Id { get { return Touch.Id; } }
+			public override Point Center { get { return Touch.GetCenterPosition(Container); } }
+			public override EllipseData Axis { get { return Touch.GetEllipseData(Container); } }
+			public override bool IsTag { get { return Touch.GetIsTagRecognized(); } }
+			public override long TagValue { get { return Touch.GetTagData().Value; } }
+		}
+
+
+
+
+
+
+
+
+
+
 
 
 
 		public TrackingCanvas()
 		{
-			Background = new SolidColorBrush(Colors.Black);
+			Background = Brushes.Black;
 			TouchDown += Canvas_TouchDown;
 			TouchMove += Canvas_TouchMove;
 			TouchUp += Canvas_TouchUp;
@@ -76,8 +117,9 @@ namespace SurfaceBlobDetection
 		}
 
 		public event Action<ITrackedBlob> StartTracking;
-		private TextBlock _Log = new TextBlock();
+		private TextBlock _Log = new TextBlock { Foreground = Brushes.White };
 		private List<TrackedBlob> _Blobs = null;
+
 
 
 		private void Canvas_TouchDown(object sender, TouchEventArgs e)
@@ -85,7 +127,7 @@ namespace SurfaceBlobDetection
 			e.TouchDevice.Capture(this);
 			e.Handled = true;
 
-			UpdateBlobs();
+			UpdateBlobs(this.GetInputDevicesCaptured());
 			UpdateLog();
 			UpdateVisuals();
 		}
@@ -108,15 +150,17 @@ namespace SurfaceBlobDetection
 				base.ReleaseTouchCapture(e.TouchDevice);
 			}
 
-			UpdateBlobs(removeExpired: true);
+			UpdateBlobs(this.GetInputDevicesCaptured(), removeExpired: true);
 			UpdateLog();
 			UpdateVisuals();
 		}
 
 
-		private void UpdateBlobs(bool removeExpired = false)
+
+
+		private void UpdateBlobs(IEnumerable<InputDevice> inputDevicesCaptured, bool removeExpired = false)
 		{
-			var currentTouches = this.GetInputDevicesCaptured()
+			var currentTouches = inputDevicesCaptured
 				.Cast<TouchDevice>()
 				.Where(touch => !touch.GetIsFingerRecognized())
 				.ToList();
@@ -126,7 +170,7 @@ namespace SurfaceBlobDetection
 			// Remove blobs no longer on the screen.
 			foreach (var blob in trackedBlobs)
 			{
-				if (!currentTouches.Any(touch => touch.Id == blob.Touch.Id))
+				if (!currentTouches.Any(touch => touch.Id == blob.Id))
 				{
 					blob.IsExpired = true;
 				}
@@ -135,9 +179,9 @@ namespace SurfaceBlobDetection
 			// Add blobs on the screen, but not already tracked.
 			foreach (TouchDevice touch in currentTouches)
 			{
-				if (!trackedBlobs.Any(blob => blob.Touch.Id == touch.Id))
+				if (!trackedBlobs.Any(blob => blob.Id == touch.Id))
 				{
-					trackedBlobs.Add(new TrackedBlob(this, touch));
+					trackedBlobs.Add(new TrackedTouchBlob(this, touch));
 				}
 			}
 
@@ -181,11 +225,99 @@ namespace SurfaceBlobDetection
 				var center = blob.Center;
 				var tag = blob.TagValue;
 
-				_Log.Text = _Log.Text + "\nTrackedBlob(" + blob.Touch.Id + ") : "
+				_Log.Text = _Log.Text + "\n\tTrackedBlob(" + blob.Id + ") : "
 					+ "Axis(" + axis.MajorAxis + "; " + axis.MinorAxis + "; " + axis.Orientation + "); "
 					+ "Pos(" + center.X + "; " + center.Y + "); "
 					+ "Tag(" + tag + ");";
 			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		internal ITrackedBlob ForTestingPurposes_StartTracking(SimulatedTouch simulatedTouch)
+		{
+			if (_Blobs == null) _Blobs = new List<TrackedBlob>();
+			var trackedBlob = new ForTestingPurposes_TrackedBlob(this, simulatedTouch);
+			_Blobs.Add(trackedBlob);
+
+			UpdateLog();
+			UpdateVisuals();
+
+			return trackedBlob;
+		}
+		internal void ForTestingPurposes_StopTracking(ITrackedBlob trackedBlob)
+		{
+			var blob = (TrackedBlob)trackedBlob;
+			blob.DontDisplay();
+			_Blobs.Remove(blob);
+
+			UpdateLog();
+			UpdateVisuals();
+		}
+		internal void ForTestingPurposes_UpdateTracking()
+		{
+			UpdateLog();
+			UpdateVisuals();
+		}
+		internal class SimulatedTouch
+		{
+			public int Id { get; set; }
+			public Point Center { get; set; }
+			public EllipseData Axis { get; set; }
+			public bool IsTag { get; set; }
+			public long TagValue { get; set; }
+		}
+		private class ForTestingPurposes_TrackedBlob : TrackedBlob
+		{
+			public ForTestingPurposes_TrackedBlob(TrackingCanvas container, SimulatedTouch touch) : base(container)
+			{
+				Touch = touch;
+			}
+
+			public SimulatedTouch Touch { get; set; }
+
+			public override int Id { get { return Touch.Id; } }
+			public override Point Center { get { return Touch.Center; } }
+			public override EllipseData Axis { get { return Touch.Axis; } }
+			public override bool IsTag { get { return Touch.IsTag; } }
+			public override long TagValue { get { return Touch.TagValue; } }
 		}
 	}
 }

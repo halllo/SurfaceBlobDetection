@@ -5,6 +5,6 @@
         xmlns:local="clr-namespace:SurfaceBlobDetection"
         Title="SurfaceBlobDetection.Test" Height="800" Width="1024">
 
-	<local:Area/>
+	<local:Area x:Name="area"/>
 	
 </Window>

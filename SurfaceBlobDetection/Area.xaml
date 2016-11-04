@@ -26,15 +26,17 @@
 		</TextBlock>
 	</Grid>
 
-	<local:TrackingCanvas Grid.Column="1" StartTracking="TrackingCanvas_StartTracking">
+	<local:TrackingCanvas Grid.Column="1" StartTracking="TrackingCanvas_StartTracking"
+						  x:Name="TrackingCanvasLayer" x:FieldModifier="public">
 
 		<TextBlock x:Name="Log1" IsHitTestVisible="False" Foreground="White" Canvas.Left="100" Canvas.Top="100"/>
 		<TextBlock x:Name="Log2" IsHitTestVisible="False" Foreground="White" Canvas.Left="100" Canvas.Top="500"/>
-		<Rectangle Width="150" Height="200" Fill="Lime" Margin="300"/>
+		<Rectangle Width="200" Height="200" Stroke="Blue" StrokeThickness="2" Margin="300"/>
 
 	</local:TrackingCanvas>
 
-	<s:ScatterView Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+	<s:ScatterView Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+				   x:Name="ScatterViewOverlay" x:FieldModifier="public">
 		<local:ScatterView />
 		<local:ScatterView />
 	</s:ScatterView>
